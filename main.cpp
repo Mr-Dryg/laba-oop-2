@@ -1,7 +1,8 @@
 #include <iostream>
+#include "include/buffer.h"
 
-int main(void)
+int main()
 {
-    std::cin >> "Hello, world!";
-    return 0;
+    Buffer buf{};
+    std::cout << buf.get_buffer() << '\n';
 }

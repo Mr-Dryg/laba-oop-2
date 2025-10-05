@@ -1,16 +1,24 @@
 #include "../include/buffer.h"
 #include <algorithm>
-#include <cstdlib>
-#include <iostream>
 #include <string.h>
+
+Buffer::Buffer()
+{
+    this->size = 0;
+}
 
 Buffer::Buffer(std::string t)
 {
-    std::reverse(t.begin(), t.end());
     this->set_max_size(t.length());
     this->size = t.length();
     for (int i=0; i < t.length(); i++)
         this->buf[i] = t[i];
+}
+
+Buffer::Buffer(const Buffer & other)
+{
+    this->set_max_size(other.get_size());
+    std::copy(other.buf, other.buf + other.size, this->buf);
 }
 
 Buffer::~Buffer() noexcept
@@ -22,9 +30,12 @@ Buffer::~Buffer() noexcept
 
 void Buffer::set_max_size(const size_t &new_max_size)
 {
-    if (new_max_size <= this->max_size)
+    if (new_max_size == this->max_size)
+        return;
+    else if (new_max_size < this->max_size)
     {
         this->max_size = new_max_size;
+        this->buf[this->max_size] = '\0';
         return;
     }
     unsigned char *new_buf = new unsigned char[new_max_size]{'\0'};
@@ -36,8 +47,10 @@ void Buffer::set_max_size(const size_t &new_max_size)
     this->buf = new_buf;
 }
 
-size_t Buffer::get_size()
+size_t Buffer::get_size() const
 {
+    if (this->size == 0)
+        return 1;
     return this->size;
 }
 
@@ -49,21 +62,23 @@ bool Buffer::set_elem(const int &i, const unsigned char &elem)
     return true;
 }
 
-unsigned char Buffer::get_elem(const int &i)
+void Buffer::append(const unsigned char &elem)
 {
+    if (this->size + 1 == this->max_size)
+        this->set_max_size(this->max_size + GROW);
+    this->buf[this->size++] = elem;
+}
+
+unsigned char Buffer::get_elem(const int &i) const
+{
+    if (this->size == 0)
+        return '0';
     return this->buf[i];
 }
 
-std::string Buffer::get_buffer(const bool &native)
+std::string Buffer::get_buffer() const
 {
-    std::string res{reinterpret_cast<const char*>(this->buf)};
-    if (!native)
-        std::reverse(res.begin(), res.end());
-    return res;
-}
-
-int main()
-{
-    Buffer buf{};
-    std::cout << buf.get_buffer() << '\n';
+    if (this->size == 0)
+        return "0";
+    return reinterpret_cast<const char*>(this->buf);
 }

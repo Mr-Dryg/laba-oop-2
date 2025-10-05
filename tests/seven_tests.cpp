@@ -1,11 +1,12 @@
+#include <string>
 #include <gtest/gtest.h>
-#include "../include/include.h"
+#include "../include/seven.h"
 
 TEST(test_01, basic_test_set)
 {
-    ASSERT_TRUE();
+    Seven num {"1"};
+    ASSERT_TRUE(num == "0");
 }
-
 
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
