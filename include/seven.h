@@ -10,14 +10,30 @@ class Seven
 private:
     Buffer buf;
 public:
-    Seven():Seven("0"){};
+    Seven() : Seven("0") {};
     // Seven(const size_t & n, unsigned char t = 0);
     // Seven(const std::initializer_list<unsigned char> & t);
     Seven(std::string t);
-    // Seven(const Seven & other);
+    Seven(const Seven& other) : Seven(other.get_string()) {};
     // Seven(Seven && other) noexcept;
-    virtual ~Seven() noexcept;
+    virtual ~Seven() noexcept = default;
 
-    Seven operator+(const Seven &other) const;
-    bool operator==(const Seven &other) const = default;
+    std::string get_string() const;
+
+    Seven& operator=(const Seven& other);
+    Seven operator+(const Seven& other) const;
+    Seven operator-(const Seven& other) const;
+    bool operator>(const Seven& other) const;
+    bool operator<(const Seven& other) const;
+    bool operator>=(const Seven& other) const;
+    bool operator<=(const Seven& other) const;
+    bool operator==(const Seven& other) const;
+    bool operator!=(const Seven& other) const;
+
+    void remove_leading_zeros();
+
+    friend std::ostream& operator<<(std::ostream& os, const Seven& num) {
+        os << num.get_string();
+        return os;
+    }
 };

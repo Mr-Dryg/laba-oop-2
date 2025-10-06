@@ -1,84 +1,93 @@
 #include "../include/buffer.h"
 #include <algorithm>
+#include <stdexcept>
 #include <string.h>
-
-Buffer::Buffer()
-{
-    this->size = 0;
-}
 
 Buffer::Buffer(std::string t)
 {
-    this->set_max_size(t.length());
     this->size = t.length();
-    for (int i=0; i < t.length(); i++)
+    this->max_size = t.length();
+    this->buf = new unsigned char[this->max_size];
+    for (size_t i = 0; i < t.length(); i++)
         this->buf[i] = t[i];
 }
 
-Buffer::Buffer(const Buffer & other)
+Buffer::Buffer(const Buffer& other) 
+    : size(other.size), max_size(other.max_size), buf(new unsigned char[other.max_size])
 {
-    this->set_max_size(other.get_size());
     std::copy(other.buf, other.buf + other.size, this->buf);
 }
 
 Buffer::~Buffer() noexcept
 {
     delete [] this->buf;
+    this->buf = nullptr;
     this->max_size = 0;
     this->size = 0;
 }
 
-void Buffer::set_max_size(const size_t &new_max_size)
+void Buffer::set_max_size(const size_t& new_max_size)
 {
     if (new_max_size == this->max_size)
         return;
-    else if (new_max_size < this->max_size)
-    {
-        this->max_size = new_max_size;
-        this->buf[this->max_size] = '\0';
-        return;
-    }
-    unsigned char *new_buf = new unsigned char[new_max_size]{'\0'};
-    for (int i=0; i < this->size; i++)
-    {
-        new_buf[i] = this->buf[i];
-    }
+    
+    unsigned char* new_buf = new unsigned char[new_max_size]{'\0'};
+    size_t copy_size = std::min(this->size, new_max_size);
+    std::copy(this->buf, this->buf + copy_size, new_buf);
     delete [] this->buf;
     this->buf = new_buf;
+    this->max_size = new_max_size;
+    this->size = copy_size;
 }
 
 size_t Buffer::get_size() const
 {
-    if (this->size == 0)
-        return 1;
     return this->size;
 }
 
-bool Buffer::set_elem(const int &i, const unsigned char &elem)
+bool Buffer::set_elem(const int& i, const unsigned char& elem)
 {
-    if (!(0 <= i && i < this->size))
+    if (!(0 <= i && i < static_cast<int>(this->size)))
         return false;
     this->buf[i] = elem;
+    if (elem == '\0')
+        this->size = i;
     return true;
 }
 
-void Buffer::append(const unsigned char &elem)
+void Buffer::push_back(const unsigned char& elem)
 {
-    if (this->size + 1 == this->max_size)
+    if (this->size + 1 >= this->max_size)
         this->set_max_size(this->max_size + GROW);
     this->buf[this->size++] = elem;
 }
 
-unsigned char Buffer::get_elem(const int &i) const
+unsigned char Buffer::get_elem(const int& i) const
 {
-    if (this->size == 0)
-        return '0';
+    if (i < 0)
+        throw std::invalid_argument("i must be greater or equal 0");
+    else if (i >= this->size)
+        return '\0';
     return this->buf[i];
 }
 
 std::string Buffer::get_buffer() const
 {
     if (this->size == 0)
-        return "0";
-    return reinterpret_cast<const char*>(this->buf);
+        return "";
+    return std::string(reinterpret_cast<const char*>(this->buf), this->size);
+}
+
+Buffer& Buffer::operator=(const Buffer& other)
+{
+    if (this != &other)
+    {
+        delete [] this->buf;
+        
+        this->size = other.size;
+        this->max_size = other.max_size;
+        this->buf = new unsigned char[this->max_size];
+        std::copy(other.buf, other.buf + other.size, this->buf);
+    }
+    return *this;
 }

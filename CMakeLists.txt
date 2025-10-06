@@ -19,20 +19,19 @@ FetchContent_MakeAvailable(googletest)
 
 
 add_library(${CMAKE_PROJECT_NAME}_lib src/buffer.cpp src/seven.cpp)
-add_executable(${CMAKE_PROJECT_NAME}_exe main.cpp)
+add_executable(${CMAKE_PROJECT_NAME} main.cpp)
 
-target_link_libraries(${CMAKE_PROJECT_NAME}_exe PRIVATE ${CMAKE_PROJECT_NAME}_lib)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${CMAKE_PROJECT_NAME}_lib)
 
 # Добавление тестов
 enable_testing()
 
 add_executable(buffer_tests tests/buffer_tests.cpp)
-add_executable(seven_tests tests/seven_tests.cpp)
 target_link_libraries(buffer_tests ${CMAKE_PROJECT_NAME}_lib gtest_main)
+
+add_executable(seven_tests tests/seven_tests.cpp)
 target_link_libraries(seven_tests ${CMAKE_PROJECT_NAME}_lib gtest_main)
 
 # Добавление тестов в тестовый набор
-add_test(NAME MyProjectTests.Buffer COMMAND buffer_tests)
-add_test(NAME MyProjectTests.Seven COMMAND seven_tests)
-
-# add_executable(buffer src/buffer.cpp)
+add_test(NAME BufferTests COMMAND buffer_tests)
+add_test(NAME SevenTests COMMAND seven_tests)

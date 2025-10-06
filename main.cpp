@@ -1,8 +1,10 @@
 #include <iostream>
-#include "include/buffer.h"
+#include "include/seven.h"
 
 int main()
 {
-    Buffer buf{};
-    std::cout << buf.get_buffer() << '\n';
+    Seven a("12");
+    Seven b("13");
+    Seven result = a - b;
+    std::cout << result << '\n';
 }
