@@ -28,9 +28,8 @@ Buffer::~Buffer() noexcept
 
 void Buffer::set_max_size(const size_t& new_max_size)
 {
-    if (new_max_size == this->max_size)
-        return;
-    
+    if (new_max_size <= this->max_size)
+        throw std::invalid_argument("New max_size must be greater than current size");
     unsigned char* new_buf = new unsigned char[new_max_size]{'\0'};
     size_t copy_size = std::min(this->size, new_max_size);
     std::copy(this->buf, this->buf + copy_size, new_buf);
@@ -45,14 +44,13 @@ size_t Buffer::get_size() const
     return this->size;
 }
 
-bool Buffer::set_elem(const int& i, const unsigned char& elem)
+void Buffer::set_elem(const int& i, const unsigned char& elem)
 {
-    if (!(0 <= i && i < static_cast<int>(this->size)))
-        return false;
+    if (!(0 <= i && i < this->size))
+        throw std::out_of_range("Index out of range");
     this->buf[i] = elem;
     if (elem == '\0')
         this->size = i;
-    return true;
 }
 
 void Buffer::push_back(const unsigned char& elem)
@@ -64,17 +62,13 @@ void Buffer::push_back(const unsigned char& elem)
 
 unsigned char Buffer::get_elem(const int& i) const
 {
-    if (i < 0)
-        throw std::invalid_argument("i must be greater or equal 0");
-    else if (i >= this->size)
-        return '\0';
+    if (!(0 <= i && i <= this->size))
+        throw std::out_of_range("Index out of range");
     return this->buf[i];
 }
 
 std::string Buffer::get_buffer() const
 {
-    if (this->size == 0)
-        return "";
     return std::string(reinterpret_cast<const char*>(this->buf), this->size);
 }
 

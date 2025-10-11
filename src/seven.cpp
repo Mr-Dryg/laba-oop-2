@@ -4,31 +4,13 @@
 #include <string>
 #include <stdexcept>
 
-// Seven::Seven(const std::initializer_list<unsigned char> & t)
-// {
-    // int i = 0;
-    // for (const auto& digit : t)
-    // {
-    //     if (0 <= digit && digit <= 6)
-    //     {
-    //         buf[i]
-    //     }
-    //     else
-    //     {
-    //         throw std::invalid_argument("Digit must be between 0 and 6");
-    //     }
-    // }
-
-// }
-
 Seven::Seven(std::string t)
 {
     int i = 0;
     for (const auto& digit : t)
         if (!('0' <= digit && digit < '0' + BASE))
         {
-            // std::cout << t << '\n';
-            throw std::invalid_argument("Digit must be between 0 and 6");
+            throw std::invalid_argument("Invalid digit for base-7 number");
         }
             
     std::reverse(t.begin(), t.end());
@@ -55,24 +37,23 @@ Seven& Seven::operator=(const Seven& other)
 Seven Seven::operator+(const Seven& other) const
 {  
     Buffer new_buf {};
-    // int size = 1 + std::max(this->buf.get_size(), other.buf.get_size());
     int carrying=0;
     int i=0;
-    for (; this->buf.get_elem(i) != '\0' && other.buf.get_elem(i) != '\0'; i++)
+    for (; i < this->buf.get_size() && i < other.buf.get_size(); i++)
     {
         int new_elem_int = carrying + (this->buf.get_elem(i) - '0') + (other.buf.get_elem(i) - '0');
         unsigned char new_elem = '0' + (new_elem_int % BASE);
         carrying = new_elem_int / BASE;
         new_buf.push_back(new_elem);
     }
-    for (;this->buf.get_elem(i) != '\0'; i++)
+    for (;i < this->buf.get_size(); i++)
     {
         int new_elem_int = carrying + this->buf.get_elem(i) - '0';
         unsigned char new_elem = '0' + (new_elem_int % BASE);
         carrying = new_elem_int / BASE;
         new_buf.push_back(new_elem);
     }
-    for (;other.buf.get_elem(i) != '\0'; i++)
+    for (;i < other.buf.get_size(); i++)
     {
         int new_elem_int = carrying + other.buf.get_elem(i) - '0';
         unsigned char new_elem = '0' + (new_elem_int % BASE);
@@ -94,12 +75,11 @@ Seven Seven::operator+(const Seven& other) const
 Seven Seven::operator-(const Seven& other) const
 {
     if (*this < other)
-        throw std::invalid_argument("other must be lower or equal");
+        throw std::invalid_argument("Other must be lower or equal");
     Buffer new_buf {};
-    // int size = 1 + std::max(this->buf.get_size(), other.buf.get_size());
     int carrying = 0;
     int i = 0;
-    for (;other.buf.get_elem(i) != '\0'; i++)
+    for (; i < other.buf.get_size(); i++)
     {
         int new_elem_int = carrying + (this->buf.get_elem(i) - '0') - (other.buf.get_elem(i) - '0');
         unsigned char new_elem;
@@ -115,7 +95,7 @@ Seven Seven::operator-(const Seven& other) const
         }
         new_buf.push_back(new_elem);
     }
-    for (;this->buf.get_elem(i) != '\0'; i++)
+    for (; i < this->buf.get_size(); i++)
     {
         int new_elem_int = carrying + (this->buf.get_elem(i) - '0');
         unsigned char new_elem;
@@ -178,15 +158,6 @@ bool Seven::operator!=(const Seven& other) const
 
 void Seven::remove_leading_zeros()
 {
-    // Buffer new_buf {};
-    // int i = 0;
-    // for (; i < this->buf.get_size() && this->buf.get_elem(i) == '0'; i++);
-    // for (; i < this->buf.get_size(); i++)
-    //     new_buf.push_back(this->buf.get_elem(i));
-    // this->buf = new_buf;
-    // if (this->buf.get_buffer() == "")
-    //     this->buf = Buffer("0");
-
     int i = this->buf.get_size() - 1;
     for (; i > 0 && this->buf.get_elem(i) == '0'; i--)
         this->buf.set_elem(i, '\0');

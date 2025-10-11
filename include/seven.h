@@ -11,16 +11,16 @@ private:
     Buffer buf;
 public:
     Seven() : Seven("0") {};
-    // Seven(const size_t & n, unsigned char t = 0);
-    // Seven(const std::initializer_list<unsigned char> & t);
     Seven(std::string t);
+    // конструктор копирования
     Seven(const Seven& other) : Seven(other.get_string()) {};
-    // Seven(Seven && other) noexcept;
     virtual ~Seven() noexcept = default;
 
     std::string get_string() const;
-
+    
+    // оператор присваивания копированием
     Seven& operator=(const Seven& other);
+
     Seven operator+(const Seven& other) const;
     Seven operator-(const Seven& other) const;
     bool operator>(const Seven& other) const;

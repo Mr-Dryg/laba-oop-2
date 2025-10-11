@@ -57,15 +57,15 @@ TEST(BufferTest, GetSize) {
 TEST(BufferTest, SetElem) {
     Buffer buf("hello");
     
-    EXPECT_TRUE(buf.set_elem(0, 'H'));
+    buf.set_elem(0, 'H');
     EXPECT_EQ(buf.get_buffer(), "Hello");
     
-    EXPECT_TRUE(buf.set_elem(4, 'O'));
+    EXPECT_NO_THROW(buf.set_elem(4, 'O'));
     EXPECT_EQ(buf.get_buffer(), "HellO");
     
-    EXPECT_FALSE(buf.set_elem(-1, 'x'));
-    EXPECT_FALSE(buf.set_elem(10, 'x'));
-    EXPECT_FALSE(buf.set_elem(100, 'x'));
+    EXPECT_THROW(buf.set_elem(-1, 'x'), std::out_of_range);
+    EXPECT_THROW(buf.set_elem(10, 'x'), std::out_of_range);
+    EXPECT_THROW(buf.set_elem(100, 'x'), std::out_of_range);
 }
 
 TEST(BufferTest, Push_back) {
@@ -98,9 +98,10 @@ TEST(BufferTest, GetElem) {
     EXPECT_EQ(buf.get_elem(1), 'e');
     EXPECT_EQ(buf.get_elem(2), 's');
     EXPECT_EQ(buf.get_elem(3), 't');
+    EXPECT_EQ(buf.get_elem(4), '\0');
     
-    EXPECT_THROW(buf.get_elem(-1), std::invalid_argument);
-    EXPECT_EQ(buf.get_elem(10), '\0');
+    EXPECT_THROW(buf.get_elem(-1), std::out_of_range);
+    EXPECT_THROW(buf.get_elem(10), std::out_of_range);
     
     Buffer empty;
     EXPECT_EQ(empty.get_elem(0), '\0');

@@ -16,15 +16,17 @@ private:
 public:
     Buffer() : size{0}, max_size{5}, buf {new unsigned char[max_size]{'\0'}} {};
     Buffer(std::string t);
+    // конструктор копирования
     Buffer(const Buffer&  other);
     virtual ~Buffer() noexcept;
     
     size_t get_size() const;
-    bool set_elem(const int& i, const unsigned char& elem);
+    void set_elem(const int& i, const unsigned char& elem);
     void push_back(const unsigned char& elem);
     unsigned char get_elem(const int& i) const;
     std::string get_buffer() const;
 
+    // оператор присваивания копированием
     Buffer& operator=(const Buffer& other);
 
     friend std::ostream& operator<<(std::ostream& os, const Buffer& buf) {
