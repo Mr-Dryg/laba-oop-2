@@ -1,7 +1,4 @@
 #pragma once
-#include <cstddef>
-#include <iostream>
-#include <new>
 #include <string>
 
 #define GROW 5
